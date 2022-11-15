@@ -1,6 +1,7 @@
 package csv
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/spf13/afero"
@@ -10,7 +11,7 @@ import (
 	"github.com/fuzhouch/query/media/fs"
 )
 
-func TestCSV_SmokeTest(t *testing.T) {
+func TestCSV_CreateCSV(t *testing.T) {
 	mem := afero.NewMemMapFs()
 	media, err := fs.New(
 		fs.WithAferoFs(mem),
@@ -25,6 +26,7 @@ func TestCSV_SmokeTest(t *testing.T) {
 			query.INT64("age")))
 	assert.Nil(t, err)
 	assert.NotNil(t, format)
+	defer format.Close()
 
 	// Semantics:
 	// SELECT * FROM test_csv_file LIMITS 1;
@@ -39,4 +41,29 @@ func TestCSV_SmokeTest(t *testing.T) {
 			assert.NotEqual(t, "", text)
 		}
 	*/
+}
+
+func TestCSV_DefaultSchemaBuiltin(t *testing.T) {
+	format, err := New(
+		WithColumns(
+			query.STRING("address"),
+			query.STRING("name"),
+			query.INT64("age")))
+	assert.Nil(t, err)
+	assert.NotNil(t, format)
+	defer format.Close()
+	assert.False(t, format.SchemaBuiltin())
+}
+
+func badMockOption() CSVOption {
+	return func(*CSV) error {
+		return errors.New("query.format.csv.ut.badMockOption")
+	}
+}
+
+func TestCSV_BadOptionRaiseError(t *testing.T) {
+	format, err := New(badMockOption())
+	assert.NotNil(t, err)
+	assert.Nil(t, format)
+	assert.Equal(t, "query.format.csv.ut.badMockOption", err.Error())
 }
