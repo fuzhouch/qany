@@ -27,20 +27,6 @@ func TestCSV_CreateCSV(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, format)
 	defer format.Close()
-
-	// Semantics:
-	// SELECT * FROM test_csv_file LIMITS 1;
-	/*
-		queryExpr := Select(ALL()).Top(1)
-		stmt, err := queryExpr.From(mem)
-		assert.Nil(t, err)
-
-		scanner := bufio.NewScanner(stmt.Reader())
-		for scanner.Next() {
-			text := scanner.Text()
-			assert.NotEqual(t, "", text)
-		}
-	*/
 }
 
 func TestCSV_DefaultSchemaBuiltin(t *testing.T) {
