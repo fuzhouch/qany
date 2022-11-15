@@ -1,14 +1,11 @@
 package csv
 
 import (
-	"errors"
-
 	"github.com/fuzhouch/query"
 )
 
 // CSV struct describes CSV file format.
 type CSV struct {
-	filePath        string
 	useSchemaInFile bool
 	columns         []query.Column
 }
@@ -24,11 +21,6 @@ func New(opts ...CSVOption) (*CSV, error) {
 			return nil, err
 		}
 	}
-
-	// filePath should never be empty.
-	if newObj.filePath == "" {
-		return nil, errors.New("query.media.csv.FilePath.Empty")
-	}
 	return newObj, nil
 }
 
@@ -41,13 +33,6 @@ func WithColumns(columns ...query.Column) CSVOption {
 		for i, col := range columns {
 			c.columns[i] = col
 		}
-		return nil
-	}
-}
-
-func WithFilePath(filePath string) CSVOption {
-	return func(c *CSV) error {
-		c.filePath = filePath
 		return nil
 	}
 }

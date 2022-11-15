@@ -9,14 +9,21 @@ import (
 )
 
 func TestFS_DefaultAssignOSFs(t *testing.T) {
-	fs, err := New()
+	fs, err := New(WithFilePath("address-book.csv"))
 	assert.Nil(t, err)
 	assert.NotNil(t, fs.fs)
 }
 
+func TestFS_FailWithoutFilePath(t *testing.T) {
+	fs, err := New()
+	assert.NotNil(t, err)
+	assert.Nil(t, fs)
+	assert.Equal(t, "query.media.fs.FilePath.Empty", err.Error())
+}
+
 func TestFS_ExplicitAssignMemOs(t *testing.T) {
 	mem := afero.NewMemMapFs()
-	fs, err := New(WithAferoFs(mem))
+	fs, err := New(WithAferoFs(mem), WithFilePath("address-book.csv"))
 	assert.Nil(t, err)
 	assert.NotNil(t, fs.fs)
 	assert.Equal(t, mem, fs.fs)

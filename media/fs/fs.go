@@ -1,11 +1,16 @@
 package fs
 
-import "github.com/spf13/afero"
+import (
+	"errors"
+
+	"github.com/spf13/afero"
+)
 
 // FileSystem struct represents file reading semantics from local
 // harddisk.
 type FileSystem struct {
-	fs afero.Fs
+	fs       afero.Fs
+	filePath string
 }
 
 type FileSystemOption = func(*FileSystem) error
@@ -25,6 +30,11 @@ func New(opts ...FileSystemOption) (*FileSystem, error) {
 		newObj.fs = afero.NewOsFs()
 	}
 
+	// filePath should never be empty.
+	if newObj.filePath == "" {
+		return nil, errors.New("query.media.fs.FilePath.Empty")
+	}
+
 	return newObj, nil
 }
 
@@ -34,6 +44,15 @@ func New(opts ...FileSystemOption) (*FileSystem, error) {
 func WithAferoFs(fs afero.Fs) FileSystemOption {
 	return func(f *FileSystem) error {
 		f.fs = fs
+		return nil
+	}
+}
+
+// WithFilePath option allows setting a file path to read, which is
+// always required when processing files at local file system.
+func WithFilePath(filePath string) FileSystemOption {
+	return func(c *FileSystem) error {
+		c.filePath = filePath
 		return nil
 	}
 }

@@ -12,12 +12,13 @@ import (
 
 func TestCSV_SmokeTest(t *testing.T) {
 	mem := afero.NewMemMapFs()
-	media, err := fs.New(fs.WithAferoFs(mem))
+	media, err := fs.New(
+		fs.WithAferoFs(mem),
+		fs.WithFilePath("address-book.csv"))
 	assert.Nil(t, err)
 	assert.NotNil(t, media)
 
 	format, err := New(
-		WithFilePath("address-book.csv"),
 		WithColumns(
 			query.STRING("address"),
 			query.STRING("name"),
